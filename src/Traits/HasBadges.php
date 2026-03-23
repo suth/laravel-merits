@@ -17,10 +17,11 @@ trait HasBadges
         dd('error');
     }
 
-    public function attachBadge(Badge $badge): void
+    public function attachBadge(Badge $badge, string $triggerType, array $meta = []): void
     {
         $this->badges()->create([
             'badge_key' => $badge->key(),
+            'trigger_type' => $triggerType,
         ]);
     }
 

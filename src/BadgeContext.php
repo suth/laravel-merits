@@ -39,4 +39,14 @@ readonly class BadgeContext
     {
         return $this->trigger instanceof $class;
     }
+
+    public function triggerType(): string
+    {
+        return match (true) {
+            $this->trigger instanceof ManualTrigger => 'manual',
+            $this->trigger instanceof RetroactiveTrigger => 'retroactive',
+            $this->trigger instanceof Model => 'model',
+            default => 'event',
+        };
+    }
 }

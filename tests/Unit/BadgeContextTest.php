@@ -57,6 +57,19 @@ it('can check the trigger type', function () {
         ->and($context->triggerIs(User::class))->toBeFalse();
 });
 
+it('returns the correct trigger type string', function (Closure $contextFactory, string $expected) {
+    $context = $contextFactory();
+
+    $triggerTypeString = $context->triggerType();
+
+    expect($triggerTypeString)->toBe($expected);
+})->with([
+    'manual'      => [fn () => BadgeContext::manual(new User()), 'manual'],
+    'retroactive' => [fn () => BadgeContext::retroactive(new User()), 'retroactive'],
+    'model'       => [fn () => BadgeContext::fromModel(new Post(), new User()), 'model'],
+    'event'       => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent(), new User()), 'event'],
+]);
+
 it('carries metadata', function () {
     $user = new User();
 

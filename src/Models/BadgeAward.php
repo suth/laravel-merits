@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BadgeAward extends Model
 {
-    protected $fillable = ['badge_key'];
+    protected $fillable = ['badge_key', 'trigger_type'];
 
     public function __construct(array $attributes = [])
     {

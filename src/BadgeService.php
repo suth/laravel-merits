@@ -2,6 +2,7 @@
 
 namespace Suth\Merits;
 
+use Suth\Merits\Contracts\Badgeable;
 use Suth\Merits\Events\BadgeAwarded;
 
 class BadgeService
@@ -19,7 +20,13 @@ class BadgeService
             return;
         }
 
-        $context->recipient->attachBadge($badge);
+        $context->recipient->attachBadge($badge, $context->triggerType(), $context->meta);
         BadgeAwarded::dispatch($badge, $context);
+    }
+
+    public function manuallyAward(Badge $badge, Badgeable $recipient): void
+    {
+        $context = BadgeContext::manual($recipient);
+        $this->award($badge, $context);
     }
 }

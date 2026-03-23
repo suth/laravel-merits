@@ -20,7 +20,7 @@ it('awards a badge when qualification is met', function () {
     $service->evaluate($badge, $context);
 
     expect($user->hasBadge($badge))->toBeTrue();
-    Event::assertDispatched(BadgeAwarded::class, function ($event) use ($user, $context) {
+    Event::assertDispatched(BadgeAwarded::class, function ($event) use ($context) {
         return $event->badge instanceof SimpleBadge
             && $event->context === $context;
     });
@@ -58,11 +58,10 @@ it('does not duplicate an already awarded badge', function () {
 it('manually awards a badge regardless of qualification', function () {
     $service = app(BadgeService::class);
     $badge = new SimpleBadge();
-//    $service->register($badge);
-    $user = User::factory()->create(); // No comments at all
+    $user = User::factory()->create();
 
-    $service->award($badge, $user, manual: true);
+    $service->manuallyAward($badge, $user);
 
-    expect($user->hasBadge('simple-badge'))->toBeTrue()
-        ->and($user->badges()->first()->manually_awarded)->toBeTrue();
+    expect($user->hasBadge($badge))->toBeTrue()
+        ->and($user->badges()->first()->trigger_type)->toBe('manual');
 });
