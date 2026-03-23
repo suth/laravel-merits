@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Suth\Merits\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class MeritsCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-merits';
 
     public $description = 'My command';
 

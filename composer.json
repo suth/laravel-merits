@@ -1,17 +1,17 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "suth/laravel-merits",
+    "description": "A self-contained user achievement badge system for Laravel",
     "keywords": [
-        ":vendor_name",
+        "suth",
         "laravel",
-        ":package_slug"
+        "laravel-merits"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/suth/laravel-merits",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Sutherland Boswell",
+            "email": "sutherland.boswell@gmail.com",
             "role": "Developer"
         }
     ],
@@ -30,18 +30,19 @@
         "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "spatie/laravel-ray": "^1.35"
+        "phpstan/phpstan-phpunit": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Suth\\Merits\\": "src/",
+            "Suth\\Merits\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "Suth\\Merits\\Tests\\": "tests/",
+            "Suth\\Merits\\Tests\\Database\\Factories\\": "tests/database/factories/",
+            "Suth\\Merits\\Tests\\Database\\Migrations\\": "tests/database/migrations/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +64,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Suth\\Merits\\MeritsServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Merits": "Suth\\Merits\\Facades\\Merits"
             }
         }
     },
