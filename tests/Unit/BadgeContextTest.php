@@ -4,6 +4,8 @@ use Suth\Merits\BadgeContext;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
+use Suth\Merits\Triggers\ManualTrigger;
+use Suth\Merits\Triggers\RetroactiveTrigger;
 
 it('can be created retroactively with just a recipient', function () {
     $user = new User();
@@ -11,19 +13,19 @@ it('can be created retroactively with just a recipient', function () {
     $context = BadgeContext::retroactive($user);
 
     expect($context->recipient)->toBe($user)
-        ->and($context->trigger)->toBeNull()
+        ->and($context->trigger)->toBeInstanceOf(RetroactiveTrigger::class)
         ->and($context->meta)->toBe([]);
 });
 
-//it('can be created manually with just a recipient', function () {
-//    $user = new User();
-//
-//    $context = BadgeContext::manual($user);
-//
-//    expect($context->recipient)->toBe($user)
-//        ->and($context->trigger)->toBeNull()
-//        ->and($context->meta)->toBe([]);
-//});
+it('can be created manually with just a recipient', function () {
+    $user = new User();
+
+    $context = BadgeContext::manual($user);
+
+    expect($context->recipient)->toBe($user)
+        ->and($context->trigger)->toBeInstanceOf(ManualTrigger::class)
+        ->and($context->meta)->toBe([]);
+});
 
 it('can be created from a model event', function () {
     $user = new User();
@@ -60,6 +62,7 @@ it('carries metadata', function () {
 
     $context = new BadgeContext(
         recipient: $user,
+        trigger: new ManualTrigger(),
         meta: ['source' => 'webhook', 'dry_run' => true],
     );
 
