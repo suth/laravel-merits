@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is a work in progress and is not functional yet.
+
 # A self-contained user achievement badge system for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/suth/laravel-merits.svg?style=flat-square)](https://packagist.org/packages/suth/laravel-merits)
