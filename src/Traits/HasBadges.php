@@ -4,6 +4,7 @@ namespace Suth\Merits\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Suth\Merits\Badge;
+use Suth\Merits\BadgeService;
 
 trait HasBadges
 {
@@ -14,7 +15,7 @@ trait HasBadges
 
     public function awardBadge(Badge $badge): void
     {
-        dd('error');
+        app(BadgeService::class)->manuallyAward($badge, $this);
     }
 
     public function attachBadge(Badge $badge, string $triggerType, array $meta = []): void
