@@ -8,7 +8,7 @@ use Suth\Merits\Enums\TriggerType;
 use Suth\Merits\Triggers\ManualTrigger;
 use Suth\Merits\Triggers\RetroactiveTrigger;
 
-readonly class BadgeContext
+final readonly class BadgeContext
 {
     public function __construct(
         public Badgeable $recipient,
@@ -16,24 +16,24 @@ readonly class BadgeContext
         public array $meta = [],
     ) {}
 
-    public static function fromModel(Model $model, Badgeable $recipient): static
+    public static function fromModel(Model $model, Badgeable $recipient): self
     {
-        return new static(recipient: $recipient, trigger: $model);
+        return new self(recipient: $recipient, trigger: $model);
     }
 
-    public static function fromEvent(object $event, Badgeable $recipient): static
+    public static function fromEvent(object $event, Badgeable $recipient): self
     {
-        return new static(recipient: $recipient, trigger: $event);
+        return new self(recipient: $recipient, trigger: $event);
     }
 
-    public static function retroactive(Badgeable $recipient, array $meta = []): static
+    public static function retroactive(Badgeable $recipient, array $meta = []): self
     {
-        return new static(recipient: $recipient, trigger: new RetroactiveTrigger, meta: $meta);
+        return new self(recipient: $recipient, trigger: new RetroactiveTrigger, meta: $meta);
     }
 
-    public static function manual(Badgeable $recipient, array $meta = []): static
+    public static function manual(Badgeable $recipient, array $meta = []): self
     {
-        return new static(recipient: $recipient, trigger: new ManualTrigger, meta: $meta);
+        return new self(recipient: $recipient, trigger: new ManualTrigger, meta: $meta);
     }
 
     public function triggerIs(string $class): bool

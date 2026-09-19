@@ -1,0 +1,12 @@
+parameters:
+    ignoreErrors:
+        -
+            # HasBadges is a trait meant to be consumed by host application models
+            # (e.g. their User model), not by anything inside this package's own
+            # src/. PHPStan only analyses src/config/database, so it can never see
+            # a real consumer and always reports this as unused. It *is* used —
+            # see tests/Fixtures/Models/User.php.
+            message: '#^Trait Suth\\Merits\\Traits\\HasBadges is used zero times and is not analysed\.$#'
+            identifier: trait.unused
+            count: 1
+            path: src/Traits/HasBadges.php
