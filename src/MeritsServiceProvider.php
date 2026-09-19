@@ -18,7 +18,7 @@ class MeritsServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-merits')
             ->hasConfigFile()
-            ->hasMigration('create_laravel_merits_table')
+            ->hasMigrations(['create_badge_awards_table', 'create_badge_registrations_table'])
             ->hasCommand(MeritsCommand::class);
     }
 }

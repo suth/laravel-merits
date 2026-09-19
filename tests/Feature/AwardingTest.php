@@ -13,7 +13,6 @@ it('awards a badge when qualification is met', function () {
     Event::fake();
     $service = app(BadgeService::class);
     $badge = new SimpleBadge;
-    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(3)->for($user)->create();
     $context = BadgeContext::retroactive($user);
@@ -31,7 +30,6 @@ it('does not award a badge when qualification is not met', function () {
     Event::fake();
     $service = app(BadgeService::class);
     $badge = new SimpleBadge;
-    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(2)->for($user)->create();
     $context = BadgeContext::retroactive($user);
@@ -45,7 +43,6 @@ it('does not award a badge when qualification is not met', function () {
 it('does not duplicate an already awarded badge', function () {
     $service = app(BadgeService::class);
     $badge = new SimpleBadge;
-    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(3)->for($user)->create();
     $context = BadgeContext::retroactive($user);

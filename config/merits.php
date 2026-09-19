@@ -1,7 +1,7 @@
 <?php
 
 use Suth\Merits\Models\BadgeAward;
-use Suth\Merits\Models\BadgeRecord;
+use Suth\Merits\Models\BadgeRegistration;
 
 return [
 
@@ -11,7 +11,7 @@ return [
          * This model stores metadata about the Badge such as created_at
          */
 
-        'badge_record' => BadgeRecord::class,
+        'badge_registration' => BadgeRegistration::class,
 
         /*
          * This is the model that records when a user has a Badge
@@ -28,6 +28,12 @@ return [
          */
 
         'badge_awards' => 'badge_awards',
+
+        /*
+         * This is the table where badge registry metadata is stored.
+         */
+
+        'badge_registrations' => 'badge_registrations',
 
     ],
 
