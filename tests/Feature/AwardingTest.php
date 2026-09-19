@@ -1,19 +1,19 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
 use Suth\Merits\BadgeContext;
 use Suth\Merits\BadgeService;
 use Suth\Merits\Enums\TriggerType;
+use Suth\Merits\Events\BadgeAwarded;
 use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
-use Suth\Merits\Events\BadgeAwarded;
-use Illuminate\Support\Facades\Event;
 
 it('awards a badge when qualification is met', function () {
     Event::fake();
     $service = app(BadgeService::class);
-    $badge = new SimpleBadge();
-//    $service->register($badge);
+    $badge = new SimpleBadge;
+    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(3)->for($user)->create();
     $context = BadgeContext::retroactive($user);
@@ -30,8 +30,8 @@ it('awards a badge when qualification is met', function () {
 it('does not award a badge when qualification is not met', function () {
     Event::fake();
     $service = app(BadgeService::class);
-    $badge = new SimpleBadge();
-//    $service->register($badge);
+    $badge = new SimpleBadge;
+    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(2)->for($user)->create();
     $context = BadgeContext::retroactive($user);
@@ -44,8 +44,8 @@ it('does not award a badge when qualification is not met', function () {
 
 it('does not duplicate an already awarded badge', function () {
     $service = app(BadgeService::class);
-    $badge = new SimpleBadge();
-//    $service->register($badge);
+    $badge = new SimpleBadge;
+    //    $service->register($badge);
     $user = User::factory()->create();
     Post::factory()->count(3)->for($user)->create();
     $context = BadgeContext::retroactive($user);
@@ -58,7 +58,7 @@ it('does not duplicate an already awarded badge', function () {
 
 it('manually awards a badge regardless of qualification', function () {
     $service = app(BadgeService::class);
-    $badge = new SimpleBadge();
+    $badge = new SimpleBadge;
     $user = User::factory()->create();
 
     $service->manuallyAward($badge, $user);

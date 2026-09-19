@@ -14,7 +14,7 @@ use Suth\Merits\Traits\HasBadges;
  */
 class User extends Model implements Badgeable
 {
-    use HasFactory, HasBadges;
+    use HasBadges, HasFactory;
 
     protected static function newFactory(): UserFactory
     {

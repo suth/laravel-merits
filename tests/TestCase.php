@@ -3,6 +3,7 @@
 namespace Suth\Merits\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Suth\Merits\MeritsServiceProvider;
 use Suth\Merits\Tests\Database\Migrations\CreatePostsTable;
@@ -33,7 +34,7 @@ class TestCase extends Orchestra
         new CreateUsersTable()->up();
         new CreatePostsTable()->up();
 
-        foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/../database/migrations') as $migration) {
+        foreach (File::allFiles(__DIR__.'/../database/migrations') as $migration) {
             (include $migration->getRealPath())->up();
         }
     }
