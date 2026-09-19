@@ -2,6 +2,7 @@
 
 use Suth\Merits\BadgeContext;
 use Suth\Merits\BadgeService;
+use Suth\Merits\Enums\TriggerType;
 use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -63,5 +64,5 @@ it('manually awards a badge regardless of qualification', function () {
     $service->manuallyAward($badge, $user);
 
     expect($user->hasBadge($badge))->toBeTrue()
-        ->and($user->badges()->first()->trigger_type)->toBe('manual');
+        ->and($user->badges()->first()->trigger_type)->toBe(TriggerType::Manual);
 });

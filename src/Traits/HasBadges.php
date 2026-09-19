@@ -23,7 +23,7 @@ trait HasBadges
     {
         $this->badges()->create([
             'badge_key' => $badge->key(),
-            'trigger_type' => $triggerType->value,
+            'trigger_type' => $triggerType,
         ]);
     }
 
