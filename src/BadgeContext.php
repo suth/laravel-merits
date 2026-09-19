@@ -4,6 +4,7 @@ namespace Suth\Merits;
 
 use Illuminate\Database\Eloquent\Model;
 use Suth\Merits\Contracts\Badgeable;
+use Suth\Merits\Enums\TriggerType;
 use Suth\Merits\Triggers\ManualTrigger;
 use Suth\Merits\Triggers\RetroactiveTrigger;
 
@@ -11,8 +12,8 @@ readonly class BadgeContext
 {
     public function __construct(
         public Badgeable $recipient,
-        public object    $trigger,
-        public array     $meta = [],
+        public object $trigger,
+        public array $meta = [],
     ) {}
 
     public static function fromModel(Model $model, Badgeable $recipient): static
@@ -27,12 +28,12 @@ readonly class BadgeContext
 
     public static function retroactive(Badgeable $recipient, array $meta = []): static
     {
-        return new static(recipient: $recipient, trigger: new RetroactiveTrigger(), meta: $meta);
+        return new static(recipient: $recipient, trigger: new RetroactiveTrigger, meta: $meta);
     }
 
     public static function manual(Badgeable $recipient, array $meta = []): static
     {
-        return new static(recipient: $recipient, trigger: new ManualTrigger(), meta: $meta);
+        return new static(recipient: $recipient, trigger: new ManualTrigger, meta: $meta);
     }
 
     public function triggerIs(string $class): bool
@@ -40,13 +41,13 @@ readonly class BadgeContext
         return $this->trigger instanceof $class;
     }
 
-    public function triggerType(): string
+    public function triggerType(): TriggerType
     {
         return match (true) {
-            $this->trigger instanceof ManualTrigger => 'manual',
-            $this->trigger instanceof RetroactiveTrigger => 'retroactive',
-            $this->trigger instanceof Model => 'model',
-            default => 'event',
+            $this->trigger instanceof ManualTrigger => TriggerType::Manual,
+            $this->trigger instanceof RetroactiveTrigger => TriggerType::Retroactive,
+            $this->trigger instanceof Model => TriggerType::Model,
+            default => TriggerType::Event,
         };
     }
 }

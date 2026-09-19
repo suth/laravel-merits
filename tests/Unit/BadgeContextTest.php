@@ -1,6 +1,7 @@
 <?php
 
 use Suth\Merits\BadgeContext;
+use Suth\Merits\Enums\TriggerType;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -8,7 +9,7 @@ use Suth\Merits\Triggers\ManualTrigger;
 use Suth\Merits\Triggers\RetroactiveTrigger;
 
 it('can be created retroactively with just a recipient', function () {
-    $user = new User();
+    $user = new User;
 
     $context = BadgeContext::retroactive($user);
 
@@ -18,7 +19,7 @@ it('can be created retroactively with just a recipient', function () {
 });
 
 it('can be created manually with just a recipient', function () {
-    $user = new User();
+    $user = new User;
 
     $context = BadgeContext::manual($user);
 
@@ -28,8 +29,8 @@ it('can be created manually with just a recipient', function () {
 });
 
 it('can be created from a model event', function () {
-    $user = new User();
-    $post = new Post();
+    $user = new User;
+    $post = new Post;
 
     $context = BadgeContext::fromModel($post, $user);
 
@@ -38,8 +39,8 @@ it('can be created from a model event', function () {
 });
 
 it('can be created from a laravel event', function () {
-    $user = new User();
-    $event = new FakeWebhookEvent();
+    $user = new User;
+    $event = new FakeWebhookEvent;
 
     $context = BadgeContext::fromEvent($event, $user);
 
@@ -48,8 +49,8 @@ it('can be created from a laravel event', function () {
 });
 
 it('can check the trigger type', function () {
-    $user = new User();
-    $post = new Post();
+    $user = new User;
+    $post = new Post;
 
     $context = BadgeContext::fromModel($post, $user);
 
@@ -57,25 +58,25 @@ it('can check the trigger type', function () {
         ->and($context->triggerIs(User::class))->toBeFalse();
 });
 
-it('returns the correct trigger type string', function (Closure $contextFactory, string $expected) {
+it('returns the correct trigger type', function (Closure $contextFactory, TriggerType $expected) {
     $context = $contextFactory();
 
-    $triggerTypeString = $context->triggerType();
+    $triggerType = $context->triggerType();
 
-    expect($triggerTypeString)->toBe($expected);
+    expect($triggerType)->toBe($expected);
 })->with([
-    'manual'      => [fn () => BadgeContext::manual(new User()), 'manual'],
-    'retroactive' => [fn () => BadgeContext::retroactive(new User()), 'retroactive'],
-    'model'       => [fn () => BadgeContext::fromModel(new Post(), new User()), 'model'],
-    'event'       => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent(), new User()), 'event'],
+    'manual' => [fn () => BadgeContext::manual(new User), TriggerType::Manual],
+    'retroactive' => [fn () => BadgeContext::retroactive(new User), TriggerType::Retroactive],
+    'model' => [fn () => BadgeContext::fromModel(new Post, new User), TriggerType::Model],
+    'event' => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent, new User), TriggerType::Event],
 ]);
 
 it('carries metadata', function () {
-    $user = new User();
+    $user = new User;
 
     $context = new BadgeContext(
         recipient: $user,
-        trigger: new ManualTrigger(),
+        trigger: new ManualTrigger,
         meta: ['source' => 'webhook', 'dry_run' => true],
     );
 

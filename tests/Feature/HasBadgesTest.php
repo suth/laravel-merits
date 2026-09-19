@@ -1,14 +1,15 @@
 <?php
 
 use Suth\Merits\BadgeService;
+use Suth\Merits\Enums\TriggerType;
 use Suth\Merits\Tests\Fixtures\Badges\AlwaysBadge;
 use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 use Suth\Merits\Tests\Fixtures\Models\User;
 
 it('badges() returns badge awards for the user', function () {
     $user = User::factory()->create();
-    $badge = new SimpleBadge();
-    $user->attachBadge($badge, 'manual');
+    $badge = new SimpleBadge;
+    $user->attachBadge($badge, TriggerType::Manual);
 
     $badges = $user->badges;
 
@@ -18,9 +19,9 @@ it('badges() returns badge awards for the user', function () {
 
 it('attachBadge() creates a badge award record', function () {
     $user = User::factory()->create();
-    $badge = new SimpleBadge();
+    $badge = new SimpleBadge;
 
-    $user->attachBadge($badge, 'manual');
+    $user->attachBadge($badge, TriggerType::Manual);
 
     $this->assertDatabaseHas('badge_awards', [
         'badge_key' => $badge->key(),
@@ -32,9 +33,9 @@ it('attachBadge() creates a badge award record', function () {
 
 it('hasBadge() returns true when badge is awarded', function () {
     $user = User::factory()->create();
-    $badge = new SimpleBadge();
+    $badge = new SimpleBadge;
 
-    $user->attachBadge($badge, 'manual');
+    $user->attachBadge($badge, TriggerType::Manual);
 
     $result = $user->hasBadge($badge);
 
@@ -43,7 +44,7 @@ it('hasBadge() returns true when badge is awarded', function () {
 
 it('hasBadge() returns false when badge is not awarded', function () {
     $user = User::factory()->create();
-    $badge = new SimpleBadge();
+    $badge = new SimpleBadge;
 
     $result = $user->hasBadge($badge);
 
@@ -52,10 +53,10 @@ it('hasBadge() returns false when badge is not awarded', function () {
 
 it('hasBadge() distinguishes between different badges', function () {
     $user = User::factory()->create();
-    $simpleBadge = new SimpleBadge();
-    $otherBadge = new AlwaysBadge();
+    $simpleBadge = new SimpleBadge;
+    $otherBadge = new AlwaysBadge;
 
-    $user->attachBadge($simpleBadge, 'manual');
+    $user->attachBadge($simpleBadge, TriggerType::Manual);
 
     $result = $user->hasBadge($otherBadge);
 
@@ -64,7 +65,7 @@ it('hasBadge() distinguishes between different badges', function () {
 
 it('awardBadge() delegates to BadgeService', function () {
     $user = User::factory()->create();
-    $badge = new SimpleBadge();
+    $badge = new SimpleBadge;
 
     $service = Mockery::mock(BadgeService::class);
     $service->shouldReceive('manuallyAward')->once()->with($badge, $user);
