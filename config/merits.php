@@ -37,4 +37,10 @@ return [
 
     ],
 
+    /*
+     * The directory badges are auto-discovered from. Defaults to app_path('Badges').
+     */
+
+    'badges_path' => null,
+
 ];

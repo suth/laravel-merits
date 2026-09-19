@@ -28,4 +28,9 @@ class MeritsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(BadgeRegistrationRepository::class, CachedBadgeRegistrationRepository::class);
     }
+
+    public function packageBooted(): void
+    {
+        $this->app->make(BadgeService::class)->initialize();
+    }
 }
