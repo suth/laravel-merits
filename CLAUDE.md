@@ -36,7 +36,7 @@ This is a Laravel package (`suth/laravel-merits`) that provides a self-contained
 ### Badge Contracts (referenced in README, not yet fully implemented)
 
 Badges declare their behavior by implementing contracts:
-- `EvaluatesEloquentEvents` — implement `eloquentListeners(): array` returning `[ModelClass => 'event']` and `resolveRecipient(object $trigger): ?Meritable`
+- `ListensToEloquentEvents` — implement `eloquentEvents(): array` returning `[ModelClass => 'event']` and `resolveRecipient(object $trigger): ?Badgeable`
 - `EvaluatesRetroactively` — marks badge as evaluable in batch/retroactive runs
 - `qualify(BadgeContext $context): bool` — core evaluation logic
 

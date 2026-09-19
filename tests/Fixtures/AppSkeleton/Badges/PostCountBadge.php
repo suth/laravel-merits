@@ -5,10 +5,10 @@ namespace App\Badges;
 use Suth\Merits\Badge;
 use Suth\Merits\BadgeContext;
 use Suth\Merits\Contracts\Badgeable;
-use Suth\Merits\Contracts\EvaluatesEloquentEvents;
+use Suth\Merits\Contracts\ListensToEloquentEvents;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 
-class PostCountBadge extends Badge implements EvaluatesEloquentEvents
+class PostCountBadge extends Badge implements ListensToEloquentEvents
 {
     public function key(): string
     {
@@ -25,7 +25,7 @@ class PostCountBadge extends Badge implements EvaluatesEloquentEvents
         return $trigger->user;
     }
 
-    public function eloquentListeners(): array
+    public function eloquentEvents(): array
     {
         return [Post::class => 'created'];
     }

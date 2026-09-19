@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Suth\Merits\Contracts\Badgeable;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
-use Suth\Merits\Contracts\EvaluatesEloquentEvents;
+use Suth\Merits\Contracts\ListensToEloquentEvents;
 use Suth\Merits\Events\BadgeAwarded;
 
 class BadgeService
@@ -28,7 +28,7 @@ class BadgeService
         $badges->each(fn (Badge $badge) => $this->registrations->register($badge));
 
         foreach ($badges as $badge) {
-            if ($badge instanceof EvaluatesEloquentEvents) {
+            if ($badge instanceof ListensToEloquentEvents) {
                 $this->registerEloquentListeners($badge);
             }
         }
@@ -48,9 +48,9 @@ class BadgeService
         ), '\\');
     }
 
-    protected function registerEloquentListeners(Badge&EvaluatesEloquentEvents $badge): void
+    protected function registerEloquentListeners(Badge&ListensToEloquentEvents $badge): void
     {
-        foreach ($badge->eloquentListeners() as $modelClass => $events) {
+        foreach ($badge->eloquentEvents() as $modelClass => $events) {
             foreach ((array) $events as $event) {
                 Event::listen("eloquent.{$event}: {$modelClass}", function ($model) use ($badge) {
                     $recipient = $badge->resolveRecipient($model);

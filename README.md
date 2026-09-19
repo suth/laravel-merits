@@ -19,20 +19,20 @@ namespace App\Badges\Definitions;
 
 use Suth\Merits\Badge;
 use Suth\Merits\BadgeContext;
-use Suth\Merits\Contracts\Meritable;
+use Suth\Merits\Contracts\Badgeable;
 use Suth\Merits\Contracts\EvaluatesRetroactively;
-use Suth\Merits\Contracts\EvaluatesEloquentEvents;
+use Suth\Merits\Contracts\ListensToEloquentEvents;
 use App\Models\Comment;
 use App\Models\User;
 
-class ProlificCommenter extends Badge implements EvaluatesEloquentEvents, EvaluateRetroactively
+class ProlificCommenter extends Badge implements ListensToEloquentEvents, EvaluatesRetroactively
 {
-    public function eloquentListeners(): array
+    public function eloquentEvents(): array
     {
         return [Comment::class => 'created'];
     }
 
-    public function resolveRecipient(object $trigger): ?Meritable
+    public function resolveRecipient(object $trigger): ?Badgeable
     {
         return $trigger->user;
     }
