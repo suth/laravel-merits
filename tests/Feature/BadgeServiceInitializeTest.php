@@ -28,7 +28,6 @@ it('registers every discovered badge with the registry', function () {
 
 it('throws with every duplicated key when badges declare colliding keys, without registering any of them', function () {
     $this->app->useAppPath(__DIR__.'/../Fixtures/DuplicateKeyAppSkeleton');
-
     $registrations = Mockery::mock(BadgeRegistrationRepository::class);
     $registrations->shouldNotReceive('register');
     $this->app->instance(BadgeRegistrationRepository::class, $registrations);
@@ -51,10 +50,9 @@ it('wires an Eloquent event listener that evaluates the badge when the model eve
     $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
-
     app(BadgeService::class)->initialize();
-
     $user = User::factory()->create();
+
     $post = Post::factory()->for($user)->create();
 
     $service->shouldHaveReceived('evaluate')->once()->with(
@@ -77,27 +75,20 @@ it('does not evaluate the badge for an Eloquent event the badge has not declared
     $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
-
     app(BadgeService::class)->initialize();
-
     $originalUser = User::factory()->create();
     $newUser = User::factory()->create();
-    // 'created' event - expected to fire evaluate
+
     $post = Post::factory()->for($originalUser)->create();
-    // 'updated' event - should not fire evaluate a second time
-    $post->user_id = $newUser->id;
-    $post->save();
+    $post->forceFill(['user_id' => $newUser->id])->save();
 
     $service->shouldHaveReceived('evaluate')->once();
 });
 
 it('automatically evaluates and awards a badge when a listened-to model event fires', function () {
     app(BadgeService::class)->initialize();
-
     $user = User::factory()->create();
-
     Post::factory()->for($user)->count(2)->create();
-    expect($user->hasBadge(new PostCountBadge))->toBeFalse();
 
     Post::factory()->for($user)->create();
 
@@ -108,9 +99,7 @@ it('wires a custom event listener that evaluates the badge when the event fires'
     $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
-
     app(BadgeService::class)->initialize();
-
     $user = User::factory()->create();
     $event = new FakeWebhookEvent($user);
 
@@ -133,7 +122,6 @@ it('registers a listener only for the custom event class the badge declares', fu
 it('does not evaluate the badge for an event it has not declared', function () {
     $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $this->app->instance(BadgeService::class, $service);
-
     app(BadgeService::class)->initialize();
 
     event(new ManualTrigger);
@@ -143,7 +131,6 @@ it('does not evaluate the badge for an event it has not declared', function () {
 
 it('automatically evaluates and awards a badge when a listened-to custom event fires', function () {
     app(BadgeService::class)->initialize();
-
     $user = User::factory()->create();
 
     event(new FakeWebhookEvent($user));

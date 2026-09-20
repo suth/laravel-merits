@@ -16,9 +16,7 @@ it('attach() creates a badge award record', function () {
     $repository->attach($user, $badge, TriggerCategory::Manual);
 
     expect(BadgeAward::count())->toBe(1);
-
     $award = BadgeAward::first();
-
     expect($award->badgeable_type)->toBe(User::class)
         ->and($award->badgeable_id)->toBe($user->id)
         ->and($award->badge_key)->toBe($badge->key())

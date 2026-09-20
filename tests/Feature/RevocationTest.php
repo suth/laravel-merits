@@ -18,13 +18,9 @@ it('revokes an auto-revocable badge when it no longer qualifies', function () {
     $service = app(BadgeService::class);
     $badge = new AutoRevocableBadge;
     $user = User::factory()->create();
-    $posts = Post::factory()->count(3)->for($user)->create();
+    app(BadgeAwardRepository::class)->attach($user, $badge, TriggerCategory::EloquentEvent);
     $context = BadgeContext::retroactive($user);
 
-    $service->evaluate($badge, $context);
-    expect($user->hasBadge($badge))->toBeTrue();
-
-    $posts->each->delete();
     $service->evaluate($badge, $context);
 
     expect($user->hasBadge($badge))->toBeFalse();
@@ -38,7 +34,6 @@ it('does not revoke a manually awarded badge even when it no longer qualifies', 
     $service = app(BadgeService::class);
     $badge = new AutoRevocableBadge;
     $user = User::factory()->create();
-
     $service->manuallyAward($badge, $user);
     $context = BadgeContext::retroactive($user);
 
@@ -53,13 +48,9 @@ it('does not revoke a non-auto-revocable badge when it no longer qualifies', fun
     $service = app(BadgeService::class);
     $badge = new SimpleBadge;
     $user = User::factory()->create();
-    $posts = Post::factory()->count(3)->for($user)->create();
+    app(BadgeAwardRepository::class)->attach($user, $badge, TriggerCategory::EloquentEvent);
     $context = BadgeContext::retroactive($user);
 
-    $service->evaluate($badge, $context);
-    expect($user->hasBadge($badge))->toBeTrue();
-
-    $posts->each->delete();
     $service->evaluate($badge, $context);
 
     expect($user->hasBadge($badge))->toBeTrue();
@@ -79,24 +70,29 @@ it('is a no-op evaluating an unawarded auto-revocable badge that does not qualif
     Event::assertNotDispatched(BadgeRevoked::class);
 });
 
-it('honors a custom shouldRevoke() leeway before revoking', function () {
+it('does not revoke while shouldRevoke() leeway has not been exhausted', function () {
     Event::fake();
     $service = app(BadgeService::class);
     $badge = new LenientAutoRevocableBadge;
     $user = User::factory()->create();
-    $posts = Post::factory()->count(3)->for($user)->create();
+    app(BadgeAwardRepository::class)->attach($user, $badge, TriggerCategory::EloquentEvent);
+    Post::factory()->for($user)->create();
     $context = BadgeContext::retroactive($user);
 
-    $service->evaluate($badge, $context);
-    expect($user->hasBadge($badge))->toBeTrue();
-
-    $posts->take(2)->each->delete();
     $service->evaluate($badge, $context);
 
     expect($user->hasBadge($badge))->toBeTrue();
     Event::assertNotDispatched(BadgeRevoked::class);
+});
 
-    $posts->last()->delete();
+it('revokes once shouldRevoke() leeway is exhausted', function () {
+    Event::fake();
+    $service = app(BadgeService::class);
+    $badge = new LenientAutoRevocableBadge;
+    $user = User::factory()->create();
+    app(BadgeAwardRepository::class)->attach($user, $badge, TriggerCategory::EloquentEvent);
+    $context = BadgeContext::retroactive($user);
+
     $service->evaluate($badge, $context);
 
     expect($user->hasBadge($badge))->toBeFalse();

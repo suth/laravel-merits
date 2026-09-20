@@ -19,7 +19,6 @@ it('badges() returns badge awards for the user', function () {
 it('hasBadge() returns true when badge is awarded', function () {
     $user = User::factory()->create();
     $badge = new SimpleBadge;
-
     $user->awardBadge($badge);
 
     $result = $user->hasBadge($badge);
@@ -40,7 +39,6 @@ it('hasBadge() distinguishes between different badges', function () {
     $user = User::factory()->create();
     $simpleBadge = new SimpleBadge;
     $otherBadge = new AlwaysBadge;
-
     $user->awardBadge($simpleBadge);
 
     $result = $user->hasBadge($otherBadge);
@@ -51,7 +49,6 @@ it('hasBadge() distinguishes between different badges', function () {
 it('awardBadge() delegates to BadgeService', function () {
     $user = User::factory()->create();
     $badge = new SimpleBadge;
-
     $service = Mockery::mock(BadgeService::class);
     $service->shouldReceive('manuallyAward')->once()->with($badge, $user);
     app()->instance(BadgeService::class, $service);

@@ -55,3 +55,16 @@ Test fixtures live in `tests/Fixtures/`:
 `config/merits.php` exposes:
 - `models.badge` — the Badge model class (defaults to `Suth\Merits\Models\Badge`)
 - `table_names.badges` — table name (defaults to `badges`)
+
+## Testing Conventions
+
+Tests use Pest's `it()` (never `test()`/`describe()`) with `expect()->toBe...()` and `->and(...)` chaining.
+
+Every test body follows a strict Arrange/Act/Assert structure, signaled by blank lines alone — never by `// Arrange` / `// Act` / `// Assert` comments:
+
+- Up to three sections: Arrange, Act, Assert. Any section may be empty (e.g. a test with no setup starts directly with Act).
+- At most one blank line between Arrange and Act, and at most one blank line between Act and Assert. No blank lines anywhere else — never inside a section.
+- Fetching or computing a value purely to assert against it (re-fetching a fresh model, reading a query log) belongs in the Assert section, not Arrange, and does not get its own blank-line separator.
+- Act should be a single statement wherever the test exercises one focal method/call. Multiple statements in Act are acceptable only when they jointly constitute the one behavior under test.
+- A test must contain exactly one Arrange/Act/Assert cycle. If expressing a scenario would require multiple act-then-assert cycles, split it into multiple `it()` cases instead — each with its own single cycle.
+- `// Arrange` / `// Act` / `// Assert` labels are never used — the blank lines alone signal the boundaries. But when a section is intentionally left empty because the test is relying on an implicit default (e.g. no Arrange because the test is checking the untouched default config value), a short comment explaining *why* is fine, e.g. `// Default is 'badge_awards'`.

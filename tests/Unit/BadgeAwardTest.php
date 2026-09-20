@@ -44,6 +44,5 @@ it('reads a persisted trigger_category back as a TriggerCategory enum', function
     $user->awardBadge(new SimpleBadge);
 
     $badgeAward = BadgeAward::query()->first();
-
     expect($badgeAward->trigger_category)->toBe(TriggerCategory::Manual);
 });
