@@ -10,6 +10,7 @@ use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Contracts\ListensToCustomEvents;
 use Suth\Merits\Contracts\ListensToEloquentEvents;
 use Suth\Merits\Events\BadgeAwarded;
+use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
 
 class BadgeService
 {
@@ -25,6 +26,8 @@ class BadgeService
         /** @var Collection<int, Badge> $badges */
         $badges = BadgeDiscovery::within($path, $namespace)
             ->map(fn (string $class) => app($class));
+
+        $this->guardAgainstDuplicateKeys($badges);
 
         $badges->each(fn (Badge $badge) => $this->registrations->register($badge));
 
@@ -51,6 +54,22 @@ class BadgeService
             '\\',
             trim(Str::after(realpath($path) ?: $path, realpath(app_path())), '/\\')
         ), '\\');
+    }
+
+    /**
+     * @param  Collection<int, Badge>  $badges
+     */
+    protected function guardAgainstDuplicateKeys(Collection $badges): void
+    {
+        $duplicates = $badges->groupBy(fn (Badge $badge) => $badge->key())
+            ->filter(fn (Collection $group) => $group->count() > 1)
+            ->map(fn (Collection $group) => $group->map(fn (Badge $badge) => $badge::class)->all());
+
+        if ($duplicates->isEmpty()) {
+            return;
+        }
+
+        throw DuplicateBadgeKeysException::forKeys($duplicates->all());
     }
 
     protected function registerEloquentListeners(Badge&ListensToEloquentEvents $badge): void

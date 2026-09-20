@@ -44,7 +44,10 @@
             "Suth\\Merits\\Tests\\Database\\Factories\\": "tests/database/factories/",
             "Suth\\Merits\\Tests\\Database\\Migrations\\": "tests/database/migrations/",
             "Workbench\\App\\": "workbench/app/",
-            "App\\Badges\\": "tests/Fixtures/AppSkeleton/Badges/"
+            "App\\Badges\\": [
+                "tests/Fixtures/AppSkeleton/Badges/",
+                "tests/Fixtures/DuplicateKeyAppSkeleton/Badges/"
+            ]
         }
     },
     "scripts": {

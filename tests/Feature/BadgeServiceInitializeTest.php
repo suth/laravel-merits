@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Suth\Merits\BadgeContext;
 use Suth\Merits\BadgeService;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
+use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -22,6 +23,27 @@ it('registers every discovered badge with the registry', function () {
     $this->app->instance(BadgeRegistrationRepository::class, $registrations);
 
     app(BadgeService::class)->initialize();
+});
+
+it('throws with every duplicated key when badges declare colliding keys, without registering any of them', function () {
+    $this->app->useAppPath(__DIR__.'/../Fixtures/DuplicateKeyAppSkeleton');
+
+    $registrations = Mockery::mock(BadgeRegistrationRepository::class);
+    $registrations->shouldNotReceive('register');
+    $this->app->instance(BadgeRegistrationRepository::class, $registrations);
+
+    try {
+        app(BadgeService::class)->initialize();
+        $this->fail('Expected DuplicateBadgeKeysException to be thrown.');
+    } catch (DuplicateBadgeKeysException $exception) {
+        expect($exception->getMessage())
+            ->toContain('"duplicate-badge"')
+            ->toContain('"another-duplicate-badge"')
+            ->toContain('DuplicateBadgeOne')
+            ->toContain('DuplicateBadgeTwo')
+            ->toContain('DuplicateBadgeThree')
+            ->toContain('DuplicateBadgeFour');
+    }
 });
 
 it('wires an Eloquent event listener that evaluates the badge when the model event fires', function () {
