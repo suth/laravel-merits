@@ -178,6 +178,9 @@ $user->awardBadge(new PostCountBadge);
 $user->hasBadge(new PostCountBadge);
 ```
 
+> [!WARNING]
+> Avoid using `create()`, `save()`, `attach()`, or `delete()` on the `$user->badges()` relation directly. It's there for querying and display (e.g. eager loading, listing a user's earned badges), but mutating it yourself can lead to unexpected results. Always award or revoke through `awardBadge()` or `BadgeService`.
+
 ### Evaluating badges retroactively
 
 In some cases (for example, after introducing a new badge) you may want to evaluate existing data against a badge. To accomplish this, build a retroactive `BadgeContext` for each recipient and hand it to the `BadgeService`:

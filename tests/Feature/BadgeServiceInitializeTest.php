@@ -5,6 +5,7 @@ use App\Badges\WebhookBadge;
 use Illuminate\Support\Facades\Event;
 use Suth\Merits\BadgeContext;
 use Suth\Merits\BadgeService;
+use Suth\Merits\Contracts\BadgeAwardRepository;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
@@ -47,7 +48,7 @@ it('throws with every duplicated key when badges declare colliding keys, without
 });
 
 it('wires an Eloquent event listener that evaluates the badge when the model event fires', function () {
-    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class)])->makePartial();
+    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
 
@@ -73,7 +74,7 @@ it('registers a listener only for the Eloquent event the badge declares', functi
 });
 
 it('does not evaluate the badge for an Eloquent event the badge has not declared', function () {
-    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class)])->makePartial();
+    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
 
@@ -104,7 +105,7 @@ it('automatically evaluates and awards a badge when a listened-to model event fi
 });
 
 it('wires a custom event listener that evaluates the badge when the event fires', function () {
-    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class)])->makePartial();
+    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $service->shouldReceive('evaluate')->andReturnNull();
     $this->app->instance(BadgeService::class, $service);
 
@@ -130,7 +131,7 @@ it('registers a listener only for the custom event class the badge declares', fu
 });
 
 it('does not evaluate the badge for an event it has not declared', function () {
-    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class)])->makePartial();
+    $service = Mockery::mock(BadgeService::class, [app(BadgeRegistrationRepository::class), app(BadgeAwardRepository::class)])->makePartial();
     $this->app->instance(BadgeService::class, $service);
 
     app(BadgeService::class)->initialize();

@@ -5,8 +5,10 @@ namespace Suth\Merits;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Suth\Merits\Commands\MeritsCommand;
+use Suth\Merits\Contracts\BadgeAwardRepository;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Repositories\CachedBadgeRegistrationRepository;
+use Suth\Merits\Repositories\EloquentBadgeAwardRepository;
 
 class MeritsServiceProvider extends PackageServiceProvider
 {
@@ -27,6 +29,7 @@ class MeritsServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(BadgeRegistrationRepository::class, CachedBadgeRegistrationRepository::class);
+        $this->app->singleton(BadgeAwardRepository::class, EloquentBadgeAwardRepository::class);
     }
 
     public function packageBooted(): void

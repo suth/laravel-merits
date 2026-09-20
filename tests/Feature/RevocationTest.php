@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Suth\Merits\BadgeContext;
 use Suth\Merits\BadgeService;
+use Suth\Merits\Contracts\BadgeAwardRepository;
 use Suth\Merits\Enums\TriggerCategory;
 use Suth\Merits\Events\BadgeRevoked;
 use Suth\Merits\Models\BadgeAward;
@@ -107,7 +108,7 @@ it('fires the underlying Eloquent deleted event when a badge is revoked', functi
     $service = app(BadgeService::class);
     $badge = new AutoRevocableBadge;
     $user = User::factory()->create();
-    $user->attachBadge($badge, TriggerCategory::EloquentEvent);
+    app(BadgeAwardRepository::class)->attach($user, $badge, TriggerCategory::EloquentEvent);
     $context = BadgeContext::retroactive($user);
 
     $service->evaluate($badge, $context);

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Suth\Merits\Contracts\AutoRevocable;
 use Suth\Merits\Contracts\Badgeable;
+use Suth\Merits\Contracts\BadgeAwardRepository;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Contracts\ListensToCustomEvents;
 use Suth\Merits\Contracts\ListensToEloquentEvents;
@@ -18,6 +19,7 @@ class BadgeService
 {
     public function __construct(
         protected BadgeRegistrationRepository $registrations,
+        protected BadgeAwardRepository $awards,
     ) {}
 
     public function initialize(): void
@@ -117,17 +119,17 @@ class BadgeService
 
     public function award(Badge $badge, BadgeContext $context): void
     {
-        if ($context->recipient->hasBadge($badge)) {
+        if ($this->awards->hasBadge($context->recipient, $badge)) {
             return;
         }
 
-        $context->recipient->attachBadge($badge, $context->triggerCategory(), $context->meta);
+        $this->awards->attach($context->recipient, $badge, $context->triggerCategory(), $context->meta);
         BadgeAwarded::dispatch($badge, $context);
     }
 
     public function revoke(Badge $badge, BadgeContext $context): void
     {
-        if (! $context->recipient->detachBadge($badge)) {
+        if (! $this->awards->detach($context->recipient, $badge)) {
             return;
         }
 

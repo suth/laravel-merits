@@ -2,6 +2,7 @@
 
 use Suth\Merits\Enums\TriggerCategory;
 use Suth\Merits\Models\BadgeAward;
+use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 use Suth\Merits\Tests\Fixtures\Models\User;
 
 it('uses the default badge_awards table name', function () {
@@ -40,10 +41,7 @@ it('stores trigger_category as its backed string value even when a subclass over
 it('reads a persisted trigger_category back as a TriggerCategory enum', function () {
     $user = User::factory()->create();
 
-    $user->badges()->create([
-        'badge_key' => 'simple-badge',
-        'trigger_category' => TriggerCategory::Manual,
-    ]);
+    $user->awardBadge(new SimpleBadge);
 
     $badgeAward = BadgeAward::query()->first();
 

@@ -1,7 +1,6 @@
 <?php
 
 use Suth\Merits\BadgeService;
-use Suth\Merits\Enums\TriggerCategory;
 use Suth\Merits\Tests\Fixtures\Badges\AlwaysBadge;
 use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -9,7 +8,7 @@ use Suth\Merits\Tests\Fixtures\Models\User;
 it('badges() returns badge awards for the user', function () {
     $user = User::factory()->create();
     $badge = new SimpleBadge;
-    $user->attachBadge($badge, TriggerCategory::Manual);
+    $user->awardBadge($badge);
 
     $badges = $user->badges;
 
@@ -17,25 +16,11 @@ it('badges() returns badge awards for the user', function () {
         ->and($badges->first()->badge_key)->toBe($badge->key());
 });
 
-it('attachBadge() creates a badge award record', function () {
-    $user = User::factory()->create();
-    $badge = new SimpleBadge;
-
-    $user->attachBadge($badge, TriggerCategory::Manual);
-
-    $this->assertDatabaseHas('badge_awards', [
-        'badge_key' => $badge->key(),
-        'trigger_category' => 'manual',
-        'badgeable_type' => User::class,
-        'badgeable_id' => $user->id,
-    ]);
-});
-
 it('hasBadge() returns true when badge is awarded', function () {
     $user = User::factory()->create();
     $badge = new SimpleBadge;
 
-    $user->attachBadge($badge, TriggerCategory::Manual);
+    $user->awardBadge($badge);
 
     $result = $user->hasBadge($badge);
 
@@ -56,7 +41,7 @@ it('hasBadge() distinguishes between different badges', function () {
     $simpleBadge = new SimpleBadge;
     $otherBadge = new AlwaysBadge;
 
-    $user->attachBadge($simpleBadge, TriggerCategory::Manual);
+    $user->awardBadge($simpleBadge);
 
     $result = $user->hasBadge($otherBadge);
 
