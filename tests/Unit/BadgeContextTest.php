@@ -1,7 +1,7 @@
 <?php
 
 use Suth\Merits\BadgeContext;
-use Suth\Merits\Enums\TriggerType;
+use Suth\Merits\Enums\TriggerCategory;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -58,17 +58,17 @@ it('can check the trigger type', function () {
         ->and($context->triggerIs(User::class))->toBeFalse();
 });
 
-it('returns the correct trigger type', function (Closure $contextFactory, TriggerType $expected) {
+it('returns the correct trigger category', function (Closure $contextFactory, TriggerCategory $expected) {
     $context = $contextFactory();
 
-    $triggerType = $context->triggerType();
+    $triggerCategory = $context->triggerCategory();
 
-    expect($triggerType)->toBe($expected);
+    expect($triggerCategory)->toBe($expected);
 })->with([
-    'manual' => [fn () => BadgeContext::manual(new User), TriggerType::Manual],
-    'retroactive' => [fn () => BadgeContext::retroactive(new User), TriggerType::Retroactive],
-    'model' => [fn () => BadgeContext::fromModel(new Post, new User), TriggerType::Model],
-    'event' => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent, new User), TriggerType::Event],
+    'manual' => [fn () => BadgeContext::manual(new User), TriggerCategory::Manual],
+    'retroactive' => [fn () => BadgeContext::retroactive(new User), TriggerCategory::Retroactive],
+    'model' => [fn () => BadgeContext::fromModel(new Post, new User), TriggerCategory::Model],
+    'event' => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent, new User), TriggerCategory::Event],
 ]);
 
 it('carries metadata', function () {

@@ -4,7 +4,7 @@ namespace Suth\Merits;
 
 use Illuminate\Database\Eloquent\Model;
 use Suth\Merits\Contracts\Badgeable;
-use Suth\Merits\Enums\TriggerType;
+use Suth\Merits\Enums\TriggerCategory;
 use Suth\Merits\Triggers\ManualTrigger;
 use Suth\Merits\Triggers\RetroactiveTrigger;
 
@@ -36,18 +36,21 @@ final readonly class BadgeContext
         return new self(recipient: $recipient, trigger: new ManualTrigger, meta: $meta);
     }
 
+    /**
+     * @param  class-string  $class
+     */
     public function triggerIs(string $class): bool
     {
         return $this->trigger instanceof $class;
     }
 
-    public function triggerType(): TriggerType
+    public function triggerCategory(): TriggerCategory
     {
         return match (true) {
-            $this->trigger instanceof ManualTrigger => TriggerType::Manual,
-            $this->trigger instanceof RetroactiveTrigger => TriggerType::Retroactive,
-            $this->trigger instanceof Model => TriggerType::Model,
-            default => TriggerType::Event,
+            $this->trigger instanceof ManualTrigger => TriggerCategory::Manual,
+            $this->trigger instanceof RetroactiveTrigger => TriggerCategory::Retroactive,
+            $this->trigger instanceof Model => TriggerCategory::Model,
+            default => TriggerCategory::Event,
         };
     }
 }

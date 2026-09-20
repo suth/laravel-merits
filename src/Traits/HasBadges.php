@@ -5,7 +5,7 @@ namespace Suth\Merits\Traits;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Suth\Merits\Badge;
 use Suth\Merits\BadgeService;
-use Suth\Merits\Enums\TriggerType;
+use Suth\Merits\Enums\TriggerCategory;
 
 trait HasBadges
 {
@@ -19,11 +19,11 @@ trait HasBadges
         app(BadgeService::class)->manuallyAward($badge, $this);
     }
 
-    public function attachBadge(Badge $badge, TriggerType $triggerType, array $meta = []): void
+    public function attachBadge(Badge $badge, TriggerCategory $triggerCategory, array $meta = []): void
     {
         $this->badges()->create([
             'badge_key' => $badge->key(),
-            'trigger_type' => $triggerType,
+            'trigger_category' => $triggerCategory,
         ]);
     }
 

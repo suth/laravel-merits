@@ -2,7 +2,7 @@
 
 namespace Suth\Merits\Enums;
 
-enum TriggerType: string
+enum TriggerCategory: string
 {
     case Manual = 'manual';
     case Retroactive = 'retroactive';

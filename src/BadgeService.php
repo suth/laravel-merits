@@ -113,7 +113,7 @@ class BadgeService
             return;
         }
 
-        $context->recipient->attachBadge($badge, $context->triggerType(), $context->meta);
+        $context->recipient->attachBadge($badge, $context->triggerCategory(), $context->meta);
         BadgeAwarded::dispatch($badge, $context);
     }
 

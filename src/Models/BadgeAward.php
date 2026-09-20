@@ -3,16 +3,16 @@
 namespace Suth\Merits\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Suth\Merits\Enums\TriggerType;
+use Suth\Merits\Enums\TriggerCategory;
 
 class BadgeAward extends Model
 {
-    protected $fillable = ['badge_key', 'trigger_type'];
+    protected $fillable = ['badge_key', 'trigger_category'];
 
     public function __construct(array $attributes = [])
     {
         $this->mergeCasts([
-            'trigger_type' => TriggerType::class,
+            'trigger_category' => TriggerCategory::class,
         ]);
 
         parent::__construct($attributes);
