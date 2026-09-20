@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Suth\Merits\Contracts\Badgeable;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
+use Suth\Merits\Contracts\ListensToCustomEvents;
 use Suth\Merits\Contracts\ListensToEloquentEvents;
 use Suth\Merits\Events\BadgeAwarded;
 
@@ -30,6 +31,10 @@ class BadgeService
         foreach ($badges as $badge) {
             if ($badge instanceof ListensToEloquentEvents) {
                 $this->registerEloquentListeners($badge);
+            }
+
+            if ($badge instanceof ListensToCustomEvents) {
+                $this->registerCustomEventListeners($badge);
             }
         }
     }
@@ -60,6 +65,19 @@ class BadgeService
                     }
                 });
             }
+        }
+    }
+
+    protected function registerCustomEventListeners(Badge&ListensToCustomEvents $badge): void
+    {
+        foreach ($badge->customEvents() as $eventClass) {
+            Event::listen($eventClass, function ($event) use ($badge) {
+                $recipient = $badge->resolveRecipient($event);
+
+                if ($recipient !== null) {
+                    $this->evaluate($badge, BadgeContext::fromEvent($event, $recipient));
+                }
+            });
         }
     }
 

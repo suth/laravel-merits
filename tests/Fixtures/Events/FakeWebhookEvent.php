@@ -2,4 +2,9 @@
 
 namespace Suth\Merits\Tests\Fixtures\Events;
 
-class FakeWebhookEvent {}
+use Suth\Merits\Tests\Fixtures\Models\User;
+
+class FakeWebhookEvent
+{
+    public function __construct(public ?User $user = null) {}
+}
