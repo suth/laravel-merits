@@ -27,6 +27,22 @@ trait HasBadges
         ]);
     }
 
+    public function detachBadge(Badge $badge): bool
+    {
+        $awards = $this->badges()
+            ->where('badge_key', $badge->key())
+            ->where('trigger_category', '!=', TriggerCategory::Manual)
+            ->get();
+
+        if ($awards->isEmpty()) {
+            return false;
+        }
+
+        $awards->each->delete();
+
+        return true;
+    }
+
     public function hasBadge(Badge $badge): bool
     {
         return $this->badges()->where('badge_key', $badge->key())->exists();

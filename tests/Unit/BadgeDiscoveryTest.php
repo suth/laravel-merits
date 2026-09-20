@@ -2,6 +2,8 @@
 
 use Suth\Merits\BadgeDiscovery;
 use Suth\Merits\Tests\Fixtures\Badges\AlwaysBadge;
+use Suth\Merits\Tests\Fixtures\Badges\AutoRevocableBadge;
+use Suth\Merits\Tests\Fixtures\Badges\LenientAutoRevocableBadge;
 use Suth\Merits\Tests\Fixtures\Badges\SimpleBadge;
 
 it('discovers concrete badge classes within a directory', function () {
@@ -13,6 +15,8 @@ it('discovers concrete badge classes within a directory', function () {
     expect($badges->all())->toEqualCanonicalizing([
         SimpleBadge::class,
         AlwaysBadge::class,
+        AutoRevocableBadge::class,
+        LenientAutoRevocableBadge::class,
     ]);
 });
 

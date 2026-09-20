@@ -24,14 +24,6 @@ abstract class Badge
     abstract public function resolveRecipient(object $trigger): ?Badgeable;
 
     /**
-     * Can this badge be removed if qualify() later returns false?
-     */
-    //    public function revocable(): bool
-    //    {
-    //        return false;
-    //    }
-
-    /**
      * Optional icon path or identifier.
      */
     //    public function icon(): string

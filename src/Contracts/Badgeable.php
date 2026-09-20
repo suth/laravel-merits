@@ -11,5 +11,7 @@ interface Badgeable
 
     public function attachBadge(Badge $badge, TriggerCategory $triggerCategory, array $meta = []): void;
 
+    public function detachBadge(Badge $badge): bool;
+
     public function hasBadge(Badge $badge): bool;
 }

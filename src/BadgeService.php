@@ -5,11 +5,13 @@ namespace Suth\Merits;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Suth\Merits\Contracts\AutoRevocable;
 use Suth\Merits\Contracts\Badgeable;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Contracts\ListensToCustomEvents;
 use Suth\Merits\Contracts\ListensToEloquentEvents;
 use Suth\Merits\Events\BadgeAwarded;
+use Suth\Merits\Events\BadgeRevoked;
 use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
 
 class BadgeService
@@ -104,6 +106,12 @@ class BadgeService
     {
         if ($badge->qualify($context)) {
             $this->award($badge, $context);
+
+            return;
+        }
+
+        if ($badge instanceof AutoRevocable && $badge->shouldRevoke($context)) {
+            $this->revoke($badge, $context);
         }
     }
 
@@ -115,6 +123,15 @@ class BadgeService
 
         $context->recipient->attachBadge($badge, $context->triggerCategory(), $context->meta);
         BadgeAwarded::dispatch($badge, $context);
+    }
+
+    public function revoke(Badge $badge, BadgeContext $context): void
+    {
+        if (! $context->recipient->detachBadge($badge)) {
+            return;
+        }
+
+        BadgeRevoked::dispatch($badge, $context);
     }
 
     public function manuallyAward(Badge $badge, Badgeable $recipient): void
