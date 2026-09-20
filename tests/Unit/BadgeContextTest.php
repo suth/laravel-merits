@@ -42,7 +42,7 @@ it('can be created from a laravel event', function () {
     $user = new User;
     $event = new FakeWebhookEvent;
 
-    $context = BadgeContext::fromEvent($event, $user);
+    $context = BadgeContext::fromCustomEvent($event, $user);
 
     expect($context->recipient)->toBe($user)
         ->and($context->trigger)->toBe($event);
@@ -67,8 +67,8 @@ it('returns the correct trigger category', function (Closure $contextFactory, Tr
 })->with([
     'manual' => [fn () => BadgeContext::manual(new User), TriggerCategory::Manual],
     'retroactive' => [fn () => BadgeContext::retroactive(new User), TriggerCategory::Retroactive],
-    'model' => [fn () => BadgeContext::fromModel(new Post, new User), TriggerCategory::Model],
-    'event' => [fn () => BadgeContext::fromEvent(new FakeWebhookEvent, new User), TriggerCategory::Event],
+    'eloquent event' => [fn () => BadgeContext::fromModel(new Post, new User), TriggerCategory::EloquentEvent],
+    'custom event' => [fn () => BadgeContext::fromCustomEvent(new FakeWebhookEvent, new User), TriggerCategory::CustomEvent],
 ]);
 
 it('carries metadata', function () {

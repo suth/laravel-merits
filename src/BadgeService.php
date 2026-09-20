@@ -94,7 +94,7 @@ class BadgeService
                 $recipient = $badge->resolveRecipient($event);
 
                 if ($recipient !== null) {
-                    $this->evaluate($badge, BadgeContext::fromEvent($event, $recipient));
+                    $this->evaluate($badge, BadgeContext::fromCustomEvent($event, $recipient));
                 }
             });
         }

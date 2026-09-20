@@ -21,7 +21,7 @@ final readonly class BadgeContext
         return new self(recipient: $recipient, trigger: $model);
     }
 
-    public static function fromEvent(object $event, Badgeable $recipient): self
+    public static function fromCustomEvent(object $event, Badgeable $recipient): self
     {
         return new self(recipient: $recipient, trigger: $event);
     }
@@ -49,8 +49,8 @@ final readonly class BadgeContext
         return match (true) {
             $this->trigger instanceof ManualTrigger => TriggerCategory::Manual,
             $this->trigger instanceof RetroactiveTrigger => TriggerCategory::Retroactive,
-            $this->trigger instanceof Model => TriggerCategory::Model,
-            default => TriggerCategory::Event,
+            $this->trigger instanceof Model => TriggerCategory::EloquentEvent,
+            default => TriggerCategory::CustomEvent,
         };
     }
 }
