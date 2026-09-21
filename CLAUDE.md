@@ -31,7 +31,6 @@ This is a Laravel package (`suth/laravel-merits`) that provides a self-contained
 - **`BadgeContext`** (`src/BadgeContext.php`) — Readonly value object passed to `qualify()`. Holds a `Badgeable` recipient, an optional trigger (Eloquent model or event), and arbitrary `$meta`. Created via static factories: `retroactive()`, `fromModel()`, `fromEvent()`.
 - **`Contracts/Badgeable`** — Interface that recipient models (e.g. `User`) must implement to be awarded badges.
 - **`MeritsServiceProvider`** — Registers config (`config/merits.php`), migration stub, and the `laravel-merits` artisan command via `spatie/laravel-package-tools`.
-- **`Facades/Merits`** — Facade pointing to `\Suth\Merits\Merits` (not yet implemented).
 
 ### Badge Contracts (referenced in README, not yet fully implemented)
 

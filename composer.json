@@ -69,10 +69,7 @@
         "laravel": {
             "providers": [
                 "Suth\\Merits\\MeritsServiceProvider"
-            ],
-            "aliases": {
-                "Merits": "Suth\\Merits\\Facades\\Merits"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",
