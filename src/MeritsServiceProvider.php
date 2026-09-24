@@ -30,10 +30,13 @@ class MeritsServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(BadgeRegistrationRepository::class, CachedBadgeRegistrationRepository::class);
         $this->app->singleton(BadgeAwardRepository::class, EloquentBadgeAwardRepository::class);
+        $this->app->singleton(BadgeService::class);
     }
 
     public function packageBooted(): void
     {
-        $this->app->make(BadgeService::class)->initialize();
+        $this->app->booted(function () {
+            $this->app->make(BadgeService::class)->initialize();
+        });
     }
 }

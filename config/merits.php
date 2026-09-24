@@ -43,4 +43,12 @@ return [
 
     'badges_path' => null,
 
+    /*
+     * Whether badges are automatically discovered from `badges_path`. Disable
+     * this to rely exclusively on badges registered manually via
+     * BadgeService::registerBadges().
+     */
+
+    'discovery' => true,
+
 ];

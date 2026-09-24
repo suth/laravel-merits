@@ -88,7 +88,7 @@ class User extends Model implements Badgeable
 
 ### Defining a badge
 
-Badges live in `app/Badges` by default (configurable via `badges_path` in `config/merits.php`) and are discovered/registered automatically. The first things we need to give a badge are a unique `key()` and a `qualify()` method that can determine whether a given recipient has earned it, plus a `resolveRecipient()` method that maps whatever triggered the evaluation back to a `Badgeable`:
+By default, badges living in `app/Badges` (configurable via `badges_path` in `config/merits.php`) are discovered and registered automatically — this is the easiest way to define a badge, and works for most cases. The first things we need to give a badge are a unique `key()` and a `qualify()` method that can determine whether a given recipient has earned it, plus a `resolveRecipient()` method that maps whatever triggered the evaluation back to a `Badgeable`:
 
 ```php
 namespace App\Badges;
@@ -118,6 +118,62 @@ class PostCountBadge extends Badge
 ```
 
 On its own, this badge is only ever evaluated when you [award it manually](#awarding-badges-manually) or [evaluate it retroactively](#evaluating-badges-retroactively). To have it evaluated automatically, implement one of the trigger contracts below.
+
+### Registering badges manually
+
+Auto-discovery instantiates a badge class with no constructor arguments, so it can't handle a *parameterized badge template*: one class that generates several badge variants from constructor arguments, e.g. a `ZodiacYearBadge` that takes an animal and a year. For badges like these, implement the `ManuallyRegistered` marker interface so discovery skips the class entirely (it can still live under `app/Badges` alongside auto-discovered badges — the marker is what excludes it, not its location), then register your instances yourself from your own service provider:
+
+```php
+namespace App\Badges;
+
+use Suth\Merits\Badge;
+use Suth\Merits\BadgeContext;
+use Suth\Merits\Contracts\Badgeable;
+use Suth\Merits\Contracts\ManuallyRegistered;
+
+class ZodiacYearBadge extends Badge implements ManuallyRegistered
+{
+    public function __construct(
+        protected string $animal,
+        protected int $year,
+    ) {}
+
+    public function key(): string
+    {
+        return "zodiac-{$this->animal}-{$this->year}";
+    }
+
+    public function qualify(BadgeContext $context): bool
+    {
+        // ...
+    }
+
+    public function resolveRecipient(object $trigger): ?Badgeable
+    {
+        // ...
+    }
+}
+```
+
+```php
+use App\Providers\AppServiceProvider;
+use Suth\Merits\BadgeService;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        app(BadgeService::class)->registerBadges([
+            new ZodiacYearBadge('tiger', 2026),
+            new ZodiacYearBadge('rabbit', 2027),
+        ]);
+    }
+}
+```
+
+`registerBadges()` must be called before the application finishes booting — any service provider's `register()` or `boot()` method works, regardless of provider order. Calling it later (e.g. at request time) won't be picked up.
+
+If you'd rather not scan the filesystem at all — for example, if every badge in your application is manually registered — set `discovery` to `false` in `config/merits.php` to disable auto-discovery entirely.
 
 ### Triggering on Eloquent events
 

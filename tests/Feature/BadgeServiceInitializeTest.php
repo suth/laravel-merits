@@ -8,6 +8,9 @@ use Suth\Merits\BadgeService;
 use Suth\Merits\Contracts\BadgeAwardRepository;
 use Suth\Merits\Contracts\BadgeRegistrationRepository;
 use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
+use Suth\Merits\Tests\Fixtures\Badges\AlwaysBadge;
+use Suth\Merits\Tests\Fixtures\Badges\DuplicateOfPostCountBadge;
+use Suth\Merits\Tests\Fixtures\Badges\ParameterizedBadge;
 use Suth\Merits\Tests\Fixtures\Events\FakeWebhookEvent;
 use Suth\Merits\Tests\Fixtures\Models\Post;
 use Suth\Merits\Tests\Fixtures\Models\User;
@@ -22,6 +25,7 @@ it('registers every discovered badge with the registry', function () {
     $registrations->shouldReceive('register')->once()->with(Mockery::type(PostCountBadge::class));
     $registrations->shouldReceive('register')->once()->with(Mockery::type(WebhookBadge::class));
     $this->app->instance(BadgeRegistrationRepository::class, $registrations);
+    $this->app->forgetInstance(BadgeService::class);
 
     app(BadgeService::class)->initialize();
 });
@@ -31,6 +35,7 @@ it('throws with every duplicated key when badges declare colliding keys, without
     $registrations = Mockery::mock(BadgeRegistrationRepository::class);
     $registrations->shouldNotReceive('register');
     $this->app->instance(BadgeRegistrationRepository::class, $registrations);
+    $this->app->forgetInstance(BadgeService::class);
 
     try {
         app(BadgeService::class)->initialize();
@@ -136,4 +141,66 @@ it('automatically evaluates and awards a badge when a listened-to custom event f
     event(new FakeWebhookEvent($user));
 
     expect($user->fresh()->hasBadge(new WebhookBadge))->toBeTrue();
+});
+
+it('does not attempt to instantiate a badge marked ManuallyRegistered during initialization', function () {
+    expect(fn () => app(BadgeService::class)->initialize())->not->toThrow(RuntimeException::class);
+});
+
+it('registers a manually registered badge alongside discovered badges', function () {
+    $registrations = Mockery::mock(BadgeRegistrationRepository::class);
+    $registrations->shouldReceive('register')->once()->with(Mockery::type(PostCountBadge::class));
+    $registrations->shouldReceive('register')->once()->with(Mockery::type(WebhookBadge::class));
+    $registrations->shouldReceive('register')->once()->with(Mockery::type(AlwaysBadge::class));
+    $this->app->instance(BadgeRegistrationRepository::class, $registrations);
+    $this->app->forgetInstance(BadgeService::class);
+    $service = app(BadgeService::class);
+    $service->registerBadges([new AlwaysBadge]);
+
+    $service->initialize();
+});
+
+it('throws a duplicate badge key exception when a manually registered badge collides with a discovered badge', function () {
+    $service = app(BadgeService::class);
+    $service->registerBadges([new DuplicateOfPostCountBadge]);
+
+    try {
+        $service->initialize();
+        $this->fail('Expected DuplicateBadgeKeysException to be thrown.');
+    } catch (DuplicateBadgeKeysException $exception) {
+        expect($exception->getMessage())
+            ->toContain('"post-count-badge"')
+            ->toContain('PostCountBadge')
+            ->toContain('DuplicateOfPostCountBadge');
+    }
+});
+
+it('throws a duplicate badge key exception when two manually registered badges declare the same key', function () {
+    $registrations = Mockery::mock(BadgeRegistrationRepository::class);
+    $registrations->shouldNotReceive('register');
+    $this->app->instance(BadgeRegistrationRepository::class, $registrations);
+    $this->app->forgetInstance(BadgeService::class);
+    $service = app(BadgeService::class);
+    $service->registerBadges([new AlwaysBadge, new AlwaysBadge]);
+
+    try {
+        $service->initialize();
+        $this->fail('Expected DuplicateBadgeKeysException to be thrown.');
+    } catch (DuplicateBadgeKeysException $exception) {
+        expect($exception->getMessage())
+            ->toContain('"always-badge"')
+            ->toContain('AlwaysBadge');
+    }
+});
+
+it('evaluates and awards a manually registered parameterized badge when its declared event fires', function () {
+    $service = app(BadgeService::class);
+    $service->registerBadges([new ParameterizedBadge(3)]);
+    $service->initialize();
+    $user = User::factory()->create();
+    Post::factory()->for($user)->count(2)->create();
+
+    Post::factory()->for($user)->create();
+
+    expect($user->fresh()->hasBadge(new ParameterizedBadge(3)))->toBeTrue();
 });

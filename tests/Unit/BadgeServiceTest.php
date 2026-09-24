@@ -19,3 +19,15 @@ it('derives the badge namespace from the app namespace and the path relative to 
 
     expect($namespace)->toBe('App\\Badges');
 });
+
+it('treats discovery as enabled by default when merits.discovery is not configured', function () {
+    config(['merits.discovery' => null]);
+
+    expect(app(BadgeService::class)->discoveryEnabled())->toBeTrue();
+});
+
+it('disables discovery when merits.discovery is explicitly set to false', function () {
+    config(['merits.discovery' => false]);
+
+    expect(app(BadgeService::class)->discoveryEnabled())->toBeFalse();
+});

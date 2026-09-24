@@ -4,6 +4,7 @@ namespace Suth\Merits;
 
 use Illuminate\Support\Collection;
 use ReflectionClass;
+use Suth\Merits\Contracts\ManuallyRegistered;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -22,6 +23,7 @@ class BadgeDiscovery
             ->map(fn (SplFileInfo $file) => static::classFromFile($file, $path, $namespace))
             ->filter(fn (string $class) => class_exists($class)
                 && is_subclass_of($class, Badge::class)
+                && ! is_subclass_of($class, ManuallyRegistered::class)
                 && ! (new ReflectionClass($class))->isAbstract())
             ->values();
     }

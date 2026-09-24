@@ -17,19 +17,35 @@ use Suth\Merits\Exceptions\DuplicateBadgeKeysException;
 
 class BadgeService
 {
+    /**
+     * @var Collection<int, Badge>
+     */
+    protected Collection $manuallyRegisteredBadges;
+
     public function __construct(
         protected BadgeRegistrationRepository $registrations,
         protected BadgeAwardRepository $awards,
-    ) {}
+    ) {
+        $this->manuallyRegisteredBadges = collect();
+    }
+
+    /**
+     * @param  array<int, Badge>  $badges
+     */
+    public function registerBadges(array $badges): void
+    {
+        $this->manuallyRegisteredBadges = $this->manuallyRegisteredBadges->merge($badges);
+    }
 
     public function initialize(): void
     {
-        $path = $this->badgesPath();
-        $namespace = $this->badgesNamespace($path);
+        $discovered = $this->discoveryEnabled()
+            ? BadgeDiscovery::within($this->badgesPath(), $this->badgesNamespace($this->badgesPath()))
+                ->map(fn (string $class) => app($class))
+            : collect();
 
         /** @var Collection<int, Badge> $badges */
-        $badges = BadgeDiscovery::within($path, $namespace)
-            ->map(fn (string $class) => app($class));
+        $badges = $discovered->merge($this->manuallyRegisteredBadges);
 
         $this->guardAgainstDuplicateKeys($badges);
 
@@ -44,6 +60,11 @@ class BadgeService
                 $this->registerCustomEventListeners($badge);
             }
         }
+    }
+
+    public function discoveryEnabled(): bool
+    {
+        return config('merits.discovery') ?? true;
     }
 
     public function badgesPath(): string
